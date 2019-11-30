@@ -50,6 +50,7 @@ public class OwnerController {
             model.addAttribute("selections", results);
             return "owners/ownersList";
         }
+
     }
 
     @GetMapping("/{ownerId}")
