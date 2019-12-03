@@ -13,6 +13,8 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.beans.PropertyEditorSupport;
+import java.time.LocalDate;
 
 @Controller
 @RequestMapping("/owners/{ownerId}/pets/{petId}")
@@ -31,6 +33,13 @@ public class VisitController {
     @InitBinder
     public void setDisallowedFields(WebDataBinder webDataBinder) {
         webDataBinder.setDisallowedFields("id");
+
+        webDataBinder.registerCustomEditor(LocalDate.class, new PropertyEditorSupport() {
+            @Override
+            public void setAsText(String text) throws IllegalArgumentException{
+                setValue(LocalDate.parse(text));
+            }
+        });
     }
 
     @ModelAttribute("visit")
@@ -61,12 +70,13 @@ public class VisitController {
     }
 
     @PostMapping("/visits/new")
-    public String processNewVisitForm(@Valid Visit visit, BindingResult bindingResult) {
+    public String processNewVisitForm(@PathVariable("ownerId") Long ownerId, @Valid Visit visit
+            , BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "pets/createOrUpdateVisitForm";
         } else {
             visitService.save(visit);
-            return "redirect:/owners/";
+            return "redirect:/owners/" + ownerId;
         }
     }
 }
