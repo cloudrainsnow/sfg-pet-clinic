@@ -1,8 +1,9 @@
 package guru.springframework.sfgpetclinic.controllers;
 
-import com.sun.org.apache.xpath.internal.operations.Mod;
+import guru.springframework.sfgpetclinic.model.Owner;
 import guru.springframework.sfgpetclinic.model.Pet;
 import guru.springframework.sfgpetclinic.model.Visit;
+import guru.springframework.sfgpetclinic.services.OwnerService;
 import guru.springframework.sfgpetclinic.services.PetService;
 import guru.springframework.sfgpetclinic.services.VisitService;
 import org.springframework.stereotype.Controller;
@@ -19,10 +20,12 @@ public class VisitController {
 
     private final VisitService visitService;
     private final PetService petService;
+    private final OwnerService ownerService;
 
-    public VisitController(VisitService visitService, PetService petService) {
+    public VisitController(VisitService visitService, PetService petService, OwnerService ownerService) {
         this.visitService = visitService;
         this.petService = petService;
+        this.ownerService = ownerService;
     }
 
     @InitBinder
@@ -44,6 +47,12 @@ public class VisitController {
         Pet pet = petService.findById(petId);
         pet.setVisits(visitService.findVisitByPet(pet));
         return  pet;
+    }
+
+    @ModelAttribute("owner")
+    public Owner findOwner(@PathVariable("ownerId") Long ownerId) {
+        Owner owner = ownerService.findById(ownerId);
+        return owner;
     }
 
     @GetMapping("/visits/new")
